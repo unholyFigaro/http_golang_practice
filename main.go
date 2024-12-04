@@ -19,5 +19,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/task", h.SetTaskHandler).Methods(http.MethodPost)
 	router.HandleFunc("/task", h.GreetingTask).Methods(http.MethodGet)
+	router.HandleFunc("/task/{id:[0-9]+}", h.UpdateTask).Methods(http.MethodPatch)
+	router.HandleFunc("/task/{id:[0-9]+}", h.DeleteTask).Methods(http.MethodDelete)
 	http.ListenAndServe("localhost:9090", router)
 }
