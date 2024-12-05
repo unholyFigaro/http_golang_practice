@@ -30,7 +30,8 @@ func (h handler) SetTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Task was added"))
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(task)
 }
 
 func (h handler) GreetingTask(w http.ResponseWriter, r *http.Request) {
@@ -54,17 +55,18 @@ func (h handler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	var existingTask m.Message
-	if err = h.DB.First(&existingTask, id).Error; err != nil {
-		http.Error(w, "Task with id not found", http.StatusNotFound)
-		return
-	}
-	if err = h.DB.Model(&existingTask).Updates(task).Error; err != nil {
+	var updatedTask m.Message
+	if err = h.DB.Model(&m.Message{}).Where("id = ?", id).Updates(task).Error; err != nil {
 		http.Error(w, "Something went wrong, try again later", http.StatusInternalServerError)
 		return
 	}
+	if err = h.DB.First(&updatedTask, id).Error; err != nil {
+		http.Error(w, "Task with id not found", http.StatusNotFound)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Task was updated"))
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updatedTask)
 }
 
 func (h handler) DeleteTask(w http.ResponseWriter, r *http.Request) {
