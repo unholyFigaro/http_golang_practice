@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/unxly/golang-pa/internal/taskService"
+	"github.com/unxly/golang-pa/internal/web/tasks"
 )
 
 type Handler struct {
@@ -17,7 +19,7 @@ func New(service *taskService.TaskService) *Handler {
 	return &Handler{Service: service}
 }
 
-func (h *Handler) PostTaskHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostTasks(w http.ResponseWriter, r *http.Request) {
 	var task taskService.Task
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
@@ -34,17 +36,23 @@ func (h *Handler) PostTaskHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(createdTask)
 }
 
-func (h *Handler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetTasks(
+	_ context.Context,
+	_ tasks.GetTasksRequestObject,
+) (tasks.GetTasksResponseObject, error) {
 	tasks, err := h.Service.GetAllTasks()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nil, err
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tasks)
+	var response tasks.GetTasks200JSONResponse
+
+	for _, task := range tasks {
+
+	}
 }
 
-func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateTasks(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	var task taskService.Task
@@ -73,7 +81,7 @@ func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(updatedTask)
 }
 
-func (h *Handler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteTasksId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 

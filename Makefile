@@ -12,3 +12,7 @@ migrate-down:
 	
 run:
 	go run cmd/taskApp/main.go
+
+gen:
+	oapi-codegen -config openapi/.openapi -include-tags tasks -package tasks openapi/openapi.yaml > ./internal/web/tasks/api.gen.go
+
