@@ -51,6 +51,10 @@ paths:
       responses:
         '204':
           description: Task successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
         '404':
           description: Task not found
     patch:

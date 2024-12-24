@@ -180,12 +180,13 @@ type DeleteTasksIdResponseObject interface {
 	VisitDeleteTasksIdResponse(w http.ResponseWriter) error
 }
 
-type DeleteTasksId204Response struct {
-}
+type DeleteTasksId204JSONResponse Task
 
-func (response DeleteTasksId204Response) VisitDeleteTasksIdResponse(w http.ResponseWriter) error {
+func (response DeleteTasksId204JSONResponse) VisitDeleteTasksIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(204)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteTasksId404Response struct {

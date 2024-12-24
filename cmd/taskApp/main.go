@@ -13,6 +13,7 @@ import (
 
 func main() {
 	db.InitDB()
+	log.Println(db.DB)
 	db.DB.AutoMigrate(&taskService.Task{})
 
 	repo := taskService.NewTaskRepository(db.DB)
