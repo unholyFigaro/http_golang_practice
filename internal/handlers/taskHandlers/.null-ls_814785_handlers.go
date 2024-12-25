@@ -1,4 +1,4 @@
-package handlers
+package taskHandlers
 
 import (
 	"context"
@@ -77,7 +77,7 @@ func (h *Handler) DeleteTasksId(_ context.Context, request tasks.DeleteTasksIdRe
 	if err != nil {
 		return nil, err
 	}
-	response := tasks.DeleteTasksId204JSONResponse{
+	response := tasks.DeleteTasksId200JSONResponse{
 		Id:     &deletedTask.ID,
 		Task:   &deletedTask.Task,
 		IsDone: &deletedTask.IsDone,

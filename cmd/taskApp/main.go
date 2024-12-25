@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	db "github.com/unxly/golang-pa/internal/database"
-	"github.com/unxly/golang-pa/internal/handlers"
+	"github.com/unxly/golang-pa/internal/handlers/taskHandlers"
 	"github.com/unxly/golang-pa/internal/taskService"
 	"github.com/unxly/golang-pa/internal/web/tasks"
 )
@@ -19,18 +19,18 @@ func main() {
 		return
 	}
 
-	repo := taskService.NewTaskRepository(db.DB)
-	service := taskService.NewTaskService(repo)
+	taskRepo := taskService.NewTaskRepository(db.DB)
+	taskService := taskService.NewTaskService(taskRepo)
 
-	handler := handlers.New(service)
+	taskHandler := taskHandlers.New(taskService)
 
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	strictHandler := tasks.NewStrictHandler(handler, nil)
-	tasks.RegisterHandlers(e, strictHandler)
+	taskStrictHandler := tasks.NewStrictHandler(taskHandler, nil)
+	tasks.RegisterHandlers(e, taskStrictHandler)
 
 	if err := e.Start(":8080"); err != nil {
 		log.Fatalf("failed to start with err: %v", err)
