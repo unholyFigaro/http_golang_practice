@@ -29,7 +29,7 @@ func (r *userRepository) GetAllUsers() ([]User, error) {
 }
 
 func (r *userRepository) CreateUser(user User) (User, error) {
-	err := r.db.Create(&User{})
+	err := r.db.Create(&user)
 	if err.Error != nil {
 		return User{}, err.Error
 	}
