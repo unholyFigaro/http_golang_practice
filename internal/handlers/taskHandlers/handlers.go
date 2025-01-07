@@ -17,9 +17,11 @@ func New(service *taskService.TaskService) *Handler {
 
 func (h *Handler) PostTasks(_ context.Context, req tasks.PostTasksRequestObject) (tasks.PostTasksResponseObject, error) {
 	taskRequest := req.Body
+	userIdFromReq := uint(*req.Body.UserId)
 	taskToCreate := taskService.Task{
 		Task:   *taskRequest.Task,
 		IsDone: *taskRequest.IsDone,
+		UserId: *&userIdFromReq,
 	}
 	createdTask, err := h.Service.CreateTask(taskToCreate)
 	if err != nil {
@@ -46,6 +48,25 @@ func (h *Handler) GetTasks(_ context.Context, _ tasks.GetTasksRequestObject) (ta
 			Id:     &v.ID,
 			Task:   &v.Task,
 			IsDone: &v.IsDone,
+		}
+		response = append(response, task)
+	}
+	return response, nil
+}
+
+func (h *Handler) GetUsersIdTasks(_ context.Context, request tasks.GetUsersIdTasksRequestObject) (tasks.GetUsersIdTasksResponseObject, error) {
+	userId := request.Id
+	tsks, err := h.Service.GetAllTasksForUser(uint(userId))
+	if err != nil {
+		return nil, err
+	}
+	response := tasks.GetUsersIdTasks200JSONResponse{}
+	for _, v := range tsks {
+		task := tasks.Task{
+			Id:     &v.ID,
+			Task:   &v.Task,
+			IsDone: &v.IsDone,
+			UserId: &v.UserId,
 		}
 		response = append(response, task)
 	}
